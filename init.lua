@@ -102,7 +102,16 @@ vim.g.have_nerd_font = false
 vim.opt.number = true
 -- You can also add relative line numbers, to help with jumping.
 --  Experiment for yourself to see if you like it!
--- vim.opt.relativenumber = true
+vim.opt.relativenumber = true
+
+vim.opt.tabstop = 2
+vim.opt.softtabstop = 2
+vim.opt.shiftwidth = 2
+vim.opt.expandtab = true
+
+vim.opt.smartindent = true
+
+vim.opt.swapfile = true
 
 -- Enable mouse mode, can be useful for resizing splits for example!
 vim.opt.mouse = 'a'
@@ -121,8 +130,12 @@ end)
 -- Enable break indent
 vim.opt.breakindent = true
 
+-- Save buffer in swapfile
+vim.opt.swapfile = true
+
 -- Save undo history
 vim.opt.undofile = true
+vim.opt.undodir = os.getenv 'HOME' .. '/.vim/undodir'
 
 -- Case-insensitive searching UNLESS \C or one or more capital letters in the search term
 vim.opt.ignorecase = true
@@ -157,6 +170,12 @@ vim.opt.cursorline = true
 -- Minimal number of screen lines to keep above and below the cursor.
 vim.opt.scrolloff = 10
 
+-- highlight column 80
+vim.opt.colorcolumn = '80'
+
+-- set term colors to match nvim
+vim.opt.termguicolors = true
+
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
 
@@ -189,6 +208,61 @@ vim.keymap.set('n', '<C-h>', '<C-w><C-h>', { desc = 'Move focus to the left wind
 vim.keymap.set('n', '<C-l>', '<C-w><C-l>', { desc = 'Move focus to the right window' })
 vim.keymap.set('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
 vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
+
+-- set local var for easier remap
+local map = vim.keymap.set
+
+-- set way to enter explore mode
+map('n', '<leader>ex', vim.cmd.Ex)
+map('n', '<leader>pv', vim.cmd.Ex)
+
+-- move lines up and down while in visual mode
+map('v', 'J', ":m '>+1<CR>gv=gv")
+map('v', 'K', ":m '>-2<CR>gv=gv")
+
+-- Yank and Paste commands
+map('x', '<leader>p', '"_dP') -- leader p does not yank the replaced text
+
+-- yanks to clipboard I believe
+map('n', '<leader>y', '"+y')
+map('v', '<leader>y', '"+y')
+map('n', '<leader>Y', '"+Y')
+
+-- deletes (doinnks) to the void instead of a yank
+map('n', '<leader>d', '"_d')
+map('v', '<leader>d', '"_d')
+
+-- Jumping to instance recenters the screen
+map('n', 'n', 'nzzzv')
+map('n', 'N', 'Nzzzv')
+
+-- page up/down recenters
+map('n', '<ctrl>u', '<ctrl>uzz')
+map('n', '<ctrl>d', '<ctrl>dzz')
+
+-- {} recenters
+map('n', '{', '{zz')
+map('n', '{', '{zz')
+
+-- lsp rename map
+map('n', '<leader>r', vim.lsp.buf.rename)
+-- combine with ctrl+f to edit the current line with normalkeys woking then q out
+
+-- remap comment to ctrl+/
+map('n', '<C-_>', 'gcc', { remap = true })
+map({ 'x', 'v' }, '<C-_>', 'gcc<Esc>gv', { remap = true })
+
+-- Keymaps for creating splits
+map('n', '<leader><right>', '<cmd>rightbelow vsplit<CR>', { remap = true })
+map('n', '<leader><down>', '<cmd>rightbelow split<CR>', { remap = true })
+map('n', '<leader><left>', '<cmd>leftabove vsplit<CR>', { remap = true })
+map('n', '<leader><up>', '<cmd>leftabove split<CR>', { remap = true })
+
+-- resizing splits
+map('n', '<C-Up>', '<cmd>horizontal resize +1<CR>', { remap = true })
+map('n', '<C-Down>', '<cmd>horizontal resize -1<CR>', { remap = true })
+map('n', '<C-Left>', '<cmd>vertical resize +1<CR>', { remap = true })
+map('n', '<C-Right>', '<cmd>vertical resize -1<CR>', { remap = true })
 
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
@@ -230,6 +304,7 @@ vim.opt.rtp:prepend(lazypath)
 require('lazy').setup({
   -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
   'tpope/vim-sleuth', -- Detect tabstop and shiftwidth automatically
+  'nvim-java/nvim-java',
 
   -- NOTE: Plugins can also be added by using a table,
   -- with the first argument being the link and the following
@@ -782,6 +857,22 @@ require('lazy').setup({
     end,
   },
 
+  {
+    'scottmckendry/cyberdream.nvim',
+    priority = 1000,
+    --   vim.cmd.colorscheme 'cyberdream',
+  },
+
+  {
+    'Mofiqul/dracula.nvim',
+    priority = 1000,
+  },
+
+  {
+    'rebelot/kanagawa.nvim',
+    priority = 1000,
+  },
+
   { -- You can easily change to a different colorscheme.
     -- Change the name of the colorscheme plugin below, and then
     -- change the command in the config to whatever the name of that colorscheme is.
@@ -799,6 +890,16 @@ require('lazy').setup({
       vim.cmd.hi 'Comment gui=none'
     end,
   },
+
+  {
+    'ellisonleao/gruvbox.nvim',
+    priority = 1000,
+  },
+
+  -- {
+  --   'HiPhish/nvim-ts-rainbow2',
+  --   priority = 1000,
+  -- },
 
   -- Highlight todo, notes, etc in comments
   { 'folke/todo-comments.nvim', event = 'VimEnter', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } },
